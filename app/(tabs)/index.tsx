@@ -1,8 +1,13 @@
-import { Button, Platform, StyleSheet, Text, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
 import * as Speech from "expo-speech";
-import { Audio } from "expo-av";
+import { ScrollView } from "react-native";
 
 const json: Json = require("@/assets/dictionary.json");
 export interface Json {
@@ -15,44 +20,39 @@ export interface GreWord {
 }
 
 export default function HomeScreen() {
-  const [permissionResponse, requestPermission] = Audio.usePermissions();
 
-  useEffect(() => {
-    enableSound();
-  }, []);
-
-  const enableSound = async () => {
-    const { sound } = await Audio.Sound.createAsync(
-      require("@/assets/soundFile.mp3")
-    );
-    if (Platform.OS === "ios") {
-      await Audio.setAudioModeAsync({
-        playsInSilentModeIOS: true,
-      });
-      await sound.playAsync();
-    }
-    let voices = await Speech.getAvailableVoicesAsync();
-    // console.log(voices);
-  };
-
-  const speak = () => {
-    console.log("speak");
-    const greeting = `123`;
-    const options = {
-      voice: "com.apple.voice.compact.zh-TW.Meijia",
-      pitch: 1.5,
-    };
-    Speech.speak(greeting, options);
+  const speak = async ( word: string) => {
+    Speech.speak(word, {
+      language: "zh-TW",
+      pitch: 1.2,
+      rate: 0.9,
+    });
   };
 
   return (
     <>
       <SafeAreaView style={{ flex: 1 }}>
-        <Button title="Press to hear some words" onPress={speak} />
-        {/* <View>
-          <Text onPress={handlePress}>{json.greWord.word}</Text>
-          <Text>{json.greWord.meaning}</Text>
-        </View> */}
+        <ScrollView>
+         
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      speak( json.greWord.word);
+                    }}
+                  >
+                    <Text>{json.greWord.word}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      speak( json.greWord.meaning);
+                    }}
+                  >
+                    <Text>{json.greWord.meaning}</Text>
+                  </TouchableOpacity>
+                </View>
+        </ScrollView>
+
+       
       </SafeAreaView>
     </>
   );
